@@ -1,0 +1,110 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Glassmorphism utilities */
+.glass {
+  background: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.glass-dark {
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Hide scrollbar but keep functionality */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* iOS-style button */
+.ios-button {
+  transition: transform 0.1s ease, opacity 0.2s ease;
+}
+
+.ios-button:active {
+  transform: scale(0.96);
+  opacity: 0.8;
+}
+
+/* Custom checkbox */
+.custom-checkbox {
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  border-radius: 8px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.custom-checkbox:checked {
+  background: #22c55e;
+  border-color: #22c55e;
+}
+
+.custom-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  left: 6px;
+  top: 2px;
+  width: 8px;
+  height: 12px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+/* Video container */
+.video-container video {
+  object-fit: cover;
+}
+
+/* Drag overlay */
+.drag-overlay {
+  cursor: grabbing !important;
+}
+
+/* Animation delays for grid items */
+.grid-item-0 { animation-delay: 0ms; }
+.grid-item-1 { animation-delay: 50ms; }
+.grid-item-2 { animation-delay: 100ms; }
+.grid-item-3 { animation-delay: 150ms; }
+.grid-item-4 { animation-delay: 200ms; }
+.grid-item-5 { animation-delay: 250ms; }
+.grid-item-6 { animation-delay: 300ms; }
+.grid-item-7 { animation-delay: 350ms; }
+.grid-item-8 { animation-delay: 400ms; }
+.grid-item-9 { animation-delay: 450ms; }
+.grid-item-10 { animation-delay: 500ms; }
+.grid-item-11 { animation-delay: 550ms; }
