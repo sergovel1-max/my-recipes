@@ -33,16 +33,26 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now }
 });
 
+const ingredientSchema = new mongoose.Schema({
+  id: String,
+  name: String,
+  amount: String,
+  checked: { type: Boolean, default: false }
+});
+
 const recipeSchema = new mongoose.Schema({
   userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   title: { type: String, required: true },
   description: String,
-  ingredients: [String],
-  instructions: [String],
+  ingredients: [ingredientSchema],
+  steps: [String],
   category: { type: String, default: 'all' },
-  time: String,
-  servings: String,
+  prepTime: Number,
+  cookTime: Number,
+  servings: Number,
   image: String,
+  images: [String],
+  coverImage: Number,
   video: String,
   order: { type: Number, default: 0 },
   createdAt: { type: Date, default: Date.now },
@@ -160,6 +170,7 @@ app.post('/api/recipes', authMiddleware, async (req, res) => {
     console.log('✅ Recipe saved:', recipe._id);
     res.json(recipe);
   } catch (err) {
+    console.error('❌ Recipe save error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
