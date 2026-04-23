@@ -22,13 +22,13 @@ import { RecipeCard } from './components/RecipeCard';
 import { RecipeDetail } from './components/RecipeDetail';
 import { AddRecipeModal } from './components/AddRecipeModal';
 import { CategoryManagerModal } from './components/CategoryManagerModal';
-import { SplashScreen, logout } from './components/SplashScreen';
+import { AuthScreen } from './components/AuthScreen';
 import { ThemeSelector } from './components/ThemeSelector';
 import { sampleRecipes } from './data';
 import { deleteFile, isLocalFile } from './fileStorage-cloud';
+import api from './api';
 import type { Recipe, Category, CategoryConfig } from './types';
 
-const STORAGE_KEY = 'culinary-blog-recipes';
 const CATEGORIES_KEY = 'culinary-blog-categories';
 const THEME_KEY = 'culinary-blog-theme';
 const DEFAULT_IS_DARK = true;
@@ -43,7 +43,7 @@ const defaultCategories: CategoryConfig[] = [
 ];
 
 function App() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [categories, setCategories] = useState<CategoryConfig[]>(defaultCategories);
   const [searchQuery, setSearchQuery] = useState('');
@@ -55,28 +55,30 @@ function App() {
   const [isManagingCategories, setIsManagingCategories] = useState(false);
   const [isDarkTheme, setIsDarkTheme] = useState(DEFAULT_IS_DARK);
 
-  // Load recipes and background from localStorage on mount
+  // Check auth on mount
   useEffect(() => {
-    // Load theme
+    const checkAuth = async () => {
+      if (api.auth.isLoggedIn()) {
+        try {
+          const userData = await api.auth.me();
+          setUser(userData);
+          const recipesData = await api.recipes.getAll();
+          setRecipes(recipesData);
+        } catch {
+          api.auth.logout();
+        }
+      }
+      setIsLoading(false);
+    };
+    checkAuth();
+  }, []);
+
+  // Load theme on mount
+  useEffect(() => {
     const storedTheme = localStorage.getItem(THEME_KEY);
     if (storedTheme) {
       setIsDarkTheme(storedTheme === 'dark');
     }
-
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored);
-        setRecipes(parsed);
-      } catch {
-        setRecipes(sampleRecipes);
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleRecipes));
-      }
-    } else {
-      setRecipes(sampleRecipes);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(sampleRecipes));
-    }
-    setIsLoading(false);
   }, []);
 
   // Load categories from localStorage
@@ -121,12 +123,6 @@ function App() {
     setCategories(prev => prev.filter(c => c.id !== id));
   }, []);
 
-  // Save recipes to localStorage whenever they change
-  useEffect(() => {
-    if (!isLoading && recipes.length > 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(recipes));
-    }
-  }, [recipes, isLoading]);
 
   // Filter recipes
   const filteredRecipes = recipes.filter((recipe) => {
@@ -137,40 +133,49 @@ function App() {
   });
 
   // Add new recipe
-  const handleAddRecipe = useCallback((newRecipe: Omit<Recipe, 'id' | 'createdAt'>) => {
-    const recipe: Recipe = {
-      ...newRecipe,
-      id: Date.now().toString(),
-      createdAt: Date.now(),
-    };
-    setRecipes((prev) => [recipe, ...prev]);
-    setIsAddModalOpen(false);
+  const handleAddRecipe = useCallback(async (newRecipe: Omit<Recipe, 'id' | 'createdAt'>) => {
+    try {
+      const recipe = await api.recipes.create(newRecipe);
+      setRecipes((prev) => [recipe, ...prev]);
+      setIsAddModalOpen(false);
+    } catch (err) {
+      console.error('Failed to add recipe:', err);
+    }
   }, []);
 
   // Edit recipe
-  const handleEditRecipe = useCallback((updatedRecipe: Recipe) => {
-    setRecipes((prev) =>
-      prev.map((r) => (r.id === updatedRecipe.id ? updatedRecipe : r))
-    );
-    setEditingRecipe(null);
-    setSelectedRecipe(null);
+  const handleEditRecipe = useCallback(async (updatedRecipe: Recipe) => {
+    try {
+      await api.recipes.update(updatedRecipe.id, updatedRecipe);
+      setRecipes((prev) =>
+        prev.map((r) => (r.id === updatedRecipe.id ? updatedRecipe : r))
+      );
+      setEditingRecipe(null);
+      setSelectedRecipe(null);
+    } catch (err) {
+      console.error('Failed to update recipe:', err);
+    }
   }, []);
 
   // Delete recipe
   const handleDeleteRecipe = useCallback(async (recipe: Recipe) => {
-    // Close modal immediately
     setSelectedRecipe(null);
     
-    // Delete files from server folder in background
-    if (isLocalFile(recipe.video || '')) {
-      deleteFile(recipe.video!).catch(console.error);
+    try {
+      await api.recipes.delete(recipe.id);
+      
+      // Delete files from Cloudinary in background
+      if (isLocalFile(recipe.video || '')) {
+        deleteFile(recipe.video!).catch(console.error);
+      }
+      if (isLocalFile(recipe.image)) {
+        deleteFile(recipe.image).catch(console.error);
+      }
+      
+      setRecipes((prev) => prev.filter((r) => r.id !== recipe.id));
+    } catch (err) {
+      console.error('Failed to delete recipe:', err);
     }
-    if (isLocalFile(recipe.image)) {
-      deleteFile(recipe.image).catch(console.error);
-    }
-    
-    // Remove from state
-    setRecipes((prev) => prev.filter((r) => r.id !== recipe.id));
   }, []);
 
   // Toggle ingredient check
@@ -237,9 +242,9 @@ function App() {
       {/* Background */}
       <div className={`fixed inset-0 z-0 ${isDarkTheme ? 'bg-gray-950' : 'bg-gray-50'}`} />
 
-      {/* Splash Screen / Auth */}
-      {!isAuthenticated && (
-        <SplashScreen onLogin={() => setIsAuthenticated(true)} />
+      {/* Auth Screen */}
+      {!user && (
+        <AuthScreen onAuth={(u) => setUser(u)} />
       )}
 
       {/* Fixed Header */}
@@ -257,8 +262,9 @@ function App() {
             />
             <motion.button
               onClick={() => {
-                logout();
-                setIsAuthenticated(false);
+                api.auth.logout();
+                setUser(null);
+                setRecipes([]);
               }}
               className={`w-10 h-10 rounded-full flex items-center justify-center ios-button ${isDarkTheme ? 'bg-white/10 text-white' : 'bg-gray-800 text-white shadow-md'}`}
               whileHover={{ scale: 1.05 }}

@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Plus, Trash2, Video, Image as ImageIcon } from 'lucide-react';
-import { uploadImage, uploadVideo, deleteFile, isLocalFile } from '../fileStorage-cloud';
+import { deleteFile, isLocalFile } from '../fileStorage-cloud';
+import api from '../api';
 import type { Recipe, Category, Ingredient, CategoryConfig } from '../types';
 
 interface AddRecipeModalProps {
@@ -178,7 +179,7 @@ export function AddRecipeModal({ isOpen, onClose, onAdd, onEdit, editingRecipe, 
       if (file && img.startsWith('blob:')) {
         try {
           setUploadProgress(Math.round((i / images.length) * 40)); // 0-40%
-          const url = await uploadImage(file);
+          const url = await api.upload.image(file);
           finalImageUrls.push(url);
         } catch (err) {
           console.error('Image upload error:', err);
@@ -196,7 +197,7 @@ export function AddRecipeModal({ isOpen, onClose, onAdd, onEdit, editingRecipe, 
     if (videoFile && video.startsWith('blob:')) {
       try {
         setUploadProgress(60);
-        videoUrl = await uploadVideo(videoFile, (progress) => {
+        videoUrl = await api.upload.video(videoFile, (progress: number) => {
           setUploadProgress(60 + Math.round(progress * 0.4)); // 60-100%
         });
       } catch (err) {
