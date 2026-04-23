@@ -25,7 +25,7 @@ import { CategoryManagerModal } from './components/CategoryManagerModal';
 import { SplashScreen, logout } from './components/SplashScreen';
 import { ThemeSelector } from './components/ThemeSelector';
 import { sampleRecipes } from './data';
-import { deleteFile, isLocalFile, uploadImage } from './fileStorage-cloud';
+import { deleteFile, isLocalFile } from './fileStorage-cloud';
 import type { Recipe, Category, CategoryConfig } from './types';
 
 const STORAGE_KEY = 'culinary-blog-recipes';
