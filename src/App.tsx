@@ -236,15 +236,14 @@ function App() {
     );
   }
 
+  if (!user) {
+    return <AuthScreen onAuth={(u) => setUser(u)} />;
+  }
+
   return (
     <div className="relative min-h-screen pb-24">
       {/* Background */}
       <div className={`fixed inset-0 z-0 ${isDarkTheme ? 'bg-gray-950' : 'bg-gray-50'}`} />
-
-      {/* Auth Screen */}
-      {!user && (
-        <AuthScreen onAuth={(u) => setUser(u)} />
-      )}
 
       {/* Fixed Header */}
       <div className="sticky top-0 z-30 px-4 py-3">

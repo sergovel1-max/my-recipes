@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, Loader2, ChefHat } from 'lucide-react';
+import { Mail, Lock, User, Loader2, ChefHat, ArrowRight } from 'lucide-react';
 import api from '../api';
 
 interface AuthScreenProps {
@@ -35,7 +35,7 @@ export function AuthScreen({ onAuth }: AuthScreenProps) {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-gray-900 via-black to-gray-900">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-gray-950 via-black to-gray-900">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -47,24 +47,24 @@ export function AuthScreen({ onAuth }: AuthScreenProps) {
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-8"
         >
-          <div className="w-20 h-20 mx-auto mb-4 rounded-2xl bg-gradient-to-br from-orange-400 to-red-500 flex items-center justify-center">
-            <ChefHat className="w-10 h-10 text-white" />
+          <div className="w-24 h-24 mx-auto mb-4 rounded-3xl bg-gradient-to-br from-orange-400 via-red-500 to-pink-500 flex items-center justify-center shadow-2xl shadow-orange-500/30">
+            <ChefHat className="w-12 h-12 text-white" />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Мои Рецепты</h1>
-          <p className="text-white/60">Ваша кулинарная книга в облаке</p>
+          <h1 className="text-4xl font-bold text-white mb-2 drop-shadow-lg">Мои Рецепты</h1>
+          <p className="text-white/50">Ваша кулинарная книга в облаке</p>
         </motion.div>
 
         {/* Form */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="glass-dark rounded-3xl p-8"
+          className="glass-dark rounded-3xl p-8 shadow-2xl shadow-black/50 border border-white/10"
         >
-          <h2 className="text-xl font-semibold text-white mb-6 text-center">
-            {isLogin ? 'Вход' : 'Регистрация'}
+          <h2 className="text-2xl font-bold text-white mb-6 text-center">
+            {isLogin ? 'Добро пожаловать' : 'Создать аккаунт'}
           </h2>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <AnimatePresence mode="wait">
               {!isLogin && (
                 <motion.div
@@ -73,14 +73,14 @@ export function AuthScreen({ onAuth }: AuthScreenProps) {
                   exit={{ opacity: 0, height: 0 }}
                   className="space-y-2"
                 >
-                  <label className="text-sm text-white/70">Имя</label>
-                  <div className="relative">
-                    <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+                  <label className="text-sm text-white/60 font-medium">Имя</label>
+                  <div className="relative group">
+                    <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-orange-400 transition-colors" />
                     <input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:border-orange-400 focus:outline-none"
+                      className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-orange-400 focus:bg-white/10 focus:outline-none transition-all ios-button"
                       placeholder="Ваше имя"
                     />
                   </div>
@@ -89,14 +89,14 @@ export function AuthScreen({ onAuth }: AuthScreenProps) {
             </AnimatePresence>
 
             <div className="space-y-2">
-              <label className="text-sm text-white/70">Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+              <label className="text-sm text-white/60 font-medium">Email</label>
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-orange-400 transition-colors" />
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:border-orange-400 focus:outline-none"
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-orange-400 focus:bg-white/10 focus:outline-none transition-all ios-button"
                   placeholder="your@email.com"
                   required
                 />
@@ -104,14 +104,14 @@ export function AuthScreen({ onAuth }: AuthScreenProps) {
             </div>
 
             <div className="space-y-2">
-              <label className="text-sm text-white/70">Пароль</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40" />
+              <label className="text-sm text-white/60 font-medium">Пароль</label>
+              <div className="relative group">
+                <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-orange-400 transition-colors" />
                 <input
                   type="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder-white/40 focus:border-orange-400 focus:outline-none"
+                  className="w-full pl-12 pr-4 py-4 rounded-2xl bg-white/5 border border-white/10 text-white placeholder-white/30 focus:border-orange-400 focus:bg-white/10 focus:outline-none transition-all ios-button"
                   placeholder="••••••••"
                   required
                 />
@@ -120,9 +120,9 @@ export function AuthScreen({ onAuth }: AuthScreenProps) {
 
             {error && (
               <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="p-3 rounded-xl bg-red-500/20 border border-red-500/30 text-red-300 text-sm"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-4 rounded-2xl bg-red-500/10 border border-red-500/30 text-red-300 text-sm"
               >
                 {error}
               </motion.div>
@@ -131,13 +131,17 @@ export function AuthScreen({ onAuth }: AuthScreenProps) {
             <motion.button
               type="submit"
               disabled={loading}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-orange-400 to-red-500 text-white font-medium hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="w-full py-4 rounded-2xl bg-gradient-to-r from-orange-400 via-red-500 to-pink-500 text-white font-semibold hover:shadow-lg hover:shadow-orange-500/30 transition-all disabled:opacity-50 disabled:hover:shadow-none ios-button"
+              whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
             >
               {loading ? (
                 <Loader2 className="w-5 h-5 animate-spin mx-auto" />
               ) : (
-                isLogin ? 'Войти' : 'Зарегистрироваться'
+                <span className="flex items-center justify-center gap-2">
+                  {isLogin ? 'Войти' : 'Зарегистрироваться'}
+                  <ArrowRight className="w-4 h-4" />
+                </span>
               )}
             </motion.button>
           </form>
@@ -145,15 +149,15 @@ export function AuthScreen({ onAuth }: AuthScreenProps) {
           <div className="mt-6 text-center">
             <button
               onClick={() => setIsLogin(!isLogin)}
-              className="text-white/60 hover:text-white text-sm transition-colors"
+              className="text-white/50 hover:text-white text-sm transition-colors"
             >
-              {isLogin ? 'Нет аккаунта? Зарегистрируйтесь' : 'Уже есть аккаунт? Войдите'}
+              {isLogin ? 'Нет аккаунта? Создать' : 'Уже есть аккаунт? Войти'}
             </button>
           </div>
         </motion.div>
 
-        <p className="text-center text-white/40 text-xs mt-6">
-          Все рецепты синхронизируются между устройствами
+        <p className="text-center text-white/30 text-xs mt-6">
+          🔒 Все данные синхронизируются между устройствами
         </p>
       </motion.div>
     </div>
