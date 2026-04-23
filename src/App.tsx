@@ -24,7 +24,6 @@ import { AddRecipeModal } from './components/AddRecipeModal';
 import { CategoryManagerModal } from './components/CategoryManagerModal';
 import { AuthScreen } from './components/AuthScreen';
 import { ThemeSelector } from './components/ThemeSelector';
-import { sampleRecipes } from './data';
 import { deleteFile, isLocalFile } from './fileStorage-cloud';
 import api from './api';
 import type { Recipe, Category, CategoryConfig } from './types';

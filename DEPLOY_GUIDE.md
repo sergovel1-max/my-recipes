@@ -11,7 +11,19 @@
    - **API Key** (например: `123456789012345`)
    - **API Secret** (длинная строка)
 
-### Шаг 2: Загрузка на GitHub
+### Шаг 2: Регистрация на MongoDB Atlas (база данных)
+1. Открой https://mongodb.com/atlas
+2. Нажми **Try Free** → создай аккаунт
+3. Создай новый кластер (бесплатный M0)
+4. В **Database Access** создай пользователя (запомни логин/пароль)
+5. В **Network Access** добавь `0.0.0.0/0` (доступ отовсюду)
+6. Нажми **Connect** → **Drivers** → выбери **Node.js**
+7. Скопируй строку подключения вида:
+   ```
+   mongodb+srv://username:password@cluster0.xxx.mongodb.net/recipes?retryWrites=true&w=majority
+   ```
+
+### Шаг 3: Загрузка на GitHub
 1. Создай новый репозиторий на https://github.com
 2. Загрузи туда весь код проекта:
    ```bash
@@ -38,6 +50,8 @@
    CLOUDINARY_CLOUD_NAME=твой_cloud_name
    CLOUDINARY_API_KEY=твой_api_key
    CLOUDINARY_API_SECRET=твой_api_secret
+   MONGODB_URI=строка_подключения_mongodb
+   JWT_SECRET=любая_длинная_случайная_строка
    ```
 7. Нажми **Create Web Service**
 8. Жди пока соберётся (2-3 минуты)
