@@ -6,8 +6,6 @@ const getToken = () => localStorage.getItem('recipes-token');
 // Базовый fetch с авторизацией
 const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   const token = getToken();
-  console.log('🔑 Token exists:', !!token, 'URL:', url);
-  
   const headers: Record<string, string> = {
     'Content-Type': 'application/json',
     ...(token ? { 'Authorization': `Bearer ${token}` } : {}),
@@ -15,8 +13,6 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   };
   
   const res = await fetch(`${API_URL}${url}`, { ...options, headers });
-  
-  console.log('📡 Response status:', res.status, 'URL:', url);
   
   if (res.status === 401) {
     localStorage.removeItem('recipes-token');
@@ -26,7 +22,6 @@ const fetchWithAuth = async (url: string, options: RequestInit = {}) => {
   
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: 'Request failed' }));
-    console.error('❌ API Error:', err);
     throw new Error(err.error || 'Request failed');
   }
   

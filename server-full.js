@@ -54,20 +54,14 @@ const Recipe = mongoose.model('Recipe', recipeSchema);
 
 // Auth middleware
 const authMiddleware = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  console.log('🔐 Auth header:', authHeader ? 'Present' : 'Missing');
-  const token = authHeader?.split(' ')[1];
-  console.log('🔑 Token extracted:', token ? 'Yes' : 'No');
-  
+  const token = req.headers.authorization?.split(' ')[1];
   if (!token) return res.status(401).json({ error: 'No token' });
   
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
-    console.log('✅ Token valid for user:', decoded.userId);
     req.userId = decoded.userId;
     next();
-  } catch (err) {
-    console.log('❌ Token invalid:', err.message);
+  } catch {
     res.status(401).json({ error: 'Invalid token' });
   }
 };
@@ -158,9 +152,12 @@ app.get('/api/recipes', authMiddleware, async (req, res) => {
 
 // Create recipe
 app.post('/api/recipes', authMiddleware, async (req, res) => {
+  console.log('📝 Creating recipe for user:', req.userId);
+  console.log('📦 Recipe data:', JSON.stringify(req.body, null, 2));
   try {
     const recipe = new Recipe({ ...req.body, userId: req.userId });
     await recipe.save();
+    console.log('✅ Recipe saved:', recipe._id);
     res.json(recipe);
   } catch (err) {
     res.status(500).json({ error: err.message });
