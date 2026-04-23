@@ -50,14 +50,20 @@ const Recipe = mongoose.model('Recipe', recipeSchema);
 
 // Auth middleware
 const authMiddleware = async (req, res, next) => {
-  const token = req.headers.authorization?.split(' ')[1];
+  const authHeader = req.headers.authorization;
+  console.log('🔐 Auth header:', authHeader ? 'Present' : 'Missing');
+  const token = authHeader?.split(' ')[1];
+  console.log('🔑 Token extracted:', token ? 'Yes' : 'No');
+  
   if (!token) return res.status(401).json({ error: 'No token' });
   
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
+    console.log('✅ Token valid for user:', decoded.userId);
     req.userId = decoded.userId;
     next();
-  } catch {
+  } catch (err) {
+    console.log('❌ Token invalid:', err.message);
     res.status(401).json({ error: 'Invalid token' });
   }
 };
