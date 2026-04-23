@@ -156,19 +156,24 @@ app.post('/api/upload-video', authMiddleware, uploadVideo.single('video'), (req,
 
 // Get all recipes for user
 app.get('/api/recipes', authMiddleware, async (req, res) => {
+  console.log('📥 Loading recipes for user:', req.userId);
   const recipes = await Recipe.find({ userId: req.userId }).sort({ order: 1, createdAt: -1 });
+  console.log('📦 Found recipes:', recipes.length);
   const formattedRecipes = recipes.map(r => ({ ...r.toObject(), id: r._id.toString() }));
   res.json(formattedRecipes);
 });
 
 // Create recipe
 app.post('/api/recipes', authMiddleware, async (req, res) => {
+  console.log('📝 Creating recipe for userId:', req.userId);
   try {
     const recipe = new Recipe({ ...req.body, userId: req.userId });
     await recipe.save();
+    console.log('✅ Recipe saved with id:', recipe._id.toString(), 'userId:', recipe.userId);
     const formattedRecipe = { ...recipe.toObject(), id: recipe._id.toString() };
     res.json(formattedRecipe);
   } catch (err) {
+    console.error('❌ Recipe save error:', err.message);
     res.status(500).json({ error: err.message });
   }
 });
