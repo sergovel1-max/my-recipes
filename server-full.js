@@ -143,7 +143,13 @@ const uploadVideo = multer({ storage: videoStorage });
 
 // 📤 Upload routes (protected)
 app.post('/api/upload-image', authMiddleware, uploadImage.single('image'), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: 'No file' });
+  console.log('📤 Upload image request received, userId:', req.userId);
+  console.log('📁 File:', req.file ? { name: req.file.originalname, size: req.file.size } : 'No file');
+  if (!req.file) {
+    console.log('❌ No file in request');
+    return res.status(400).json({ error: 'No file' });
+  }
+  console.log('✅ Image uploaded, URL:', req.file.path);
   res.json({ url: req.file.path });
 });
 

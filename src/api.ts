@@ -1,4 +1,4 @@
-const API_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3001';
+const API_URL = (import.meta as any).env?.VITE_API_URL || 'http://localhost:3005';
 
 // Получаем токен из localStorage
 const getToken = () => localStorage.getItem('recipes-token');
@@ -83,12 +83,14 @@ export const recipes = {
 // UPLOAD API (использует FormData, не JSON)
 export const upload = {
   image: (file: File, onProgress?: (p: number) => void): Promise<string> => {
+    console.log('📤 Uploading image:', file.name, file.size, 'bytes');
     return new Promise((resolve, reject) => {
       const formData = new FormData();
       formData.append('image', file);
       
       const xhr = new XMLHttpRequest();
       const token = getToken();
+      console.log('🔑 Token for upload:', token ? 'Present' : 'Missing');
       
       xhr.upload.addEventListener('progress', (e) => {
         if (e.lengthComputable && onProgress) {

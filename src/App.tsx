@@ -237,7 +237,16 @@ function App() {
   }
 
   if (!user) {
-    return <AuthScreen onAuth={(u) => setUser(u)} />;
+    return <AuthScreen onAuth={async (u) => {
+      setUser(u);
+      // Load recipes after login
+      try {
+        const recipesData = await api.recipes.getAll();
+        setRecipes(recipesData);
+      } catch (err) {
+        console.error('Failed to load recipes after login:', err);
+      }
+    }} />;
   }
 
   return (
